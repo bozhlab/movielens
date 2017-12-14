@@ -38,11 +38,11 @@ for g in total_genres:
     movies_list = movies_raw.filter(lambda line: g in line.split('::')[2]).map(lambda line: (line.split('::')[0])).collect()
 
     #get only rating from those movies
-    movies_ratings = movies_ratings.filter(lambda mv: mv[0] in movies_list)
+    movies_ratings_filter = movies_ratings.filter(lambda mv: mv[0] in movies_list)
 
     #get total sum of rating and total number of rating from users seperated by movie_id
     sum_count = (0,0)
-    sum_movies_ratings = movies_ratings.aggregateByKey(sum_count, lambda a,b: (a[0] + b,    a[1] + 1),
+    sum_movies_ratings = movies_ratings_filter.aggregateByKey(sum_count, lambda a,b: (a[0] + b,    a[1] + 1),
                                   lambda a,b: (a[0] + b[0], a[1] + b[1]))
 
     movie_avg_rating = sum_movies_ratings.mapValues(lambda v: round(v[0]/v[1],3)).takeOrdered(10, key = lambda x: -x[1])
